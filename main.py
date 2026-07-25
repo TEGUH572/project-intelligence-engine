@@ -1,6 +1,8 @@
 from rich.console import Console
 from rich.progress import Progress
 
+from config import APP_NAME, APP_VERSION
+
 from researcher.search import find_official_website
 from researcher.website import get_website_info
 
@@ -9,6 +11,7 @@ from repository_ranker import (
     rank_repositories
 )
 from analyzer.scorer import calculate_score
+from analyzer.summary import generate_summary
 from analyzer.intelligence import analyze_project
 from analyzer.knowledge import get_project_knowledge
 from reporter.exporter import export_json, export_markdown, export_batch_json, export_batch_markdown
@@ -16,10 +19,11 @@ from reporter.ranking import show_batch_ranking, show_batch_summary
 from scanner.batch import get_projects
 
 console = Console()
+
 def show_header():
 
     console.rule(
-        "[bold blue]Airdrop Research Assistant"
+        f"[bold blue]{APP_NAME} v{APP_VERSION}"
     )
 
 def show_searching():
@@ -118,6 +122,47 @@ def show_github_header():
         "[bold cyan]GITHUB INTELLIGENCE"
     )
 
+def show_ai_summary(summary):
+
+    console.print()
+
+    console.rule(
+        "[bold green]EXECUTIVE SUMMARY"
+    )
+
+    console.print("[bold]Strengths[/bold]")
+
+    if summary["strengths"]:
+
+        for item in summary["strengths"]:
+
+            console.print(f"✓ {item}")
+
+    else:
+
+        console.print("- None")
+
+    console.print()
+
+    console.print("[bold]Warnings[/bold]")
+
+    if summary["warnings"]:
+
+        for item in summary["warnings"]:
+
+            console.print(f"• {item}")
+
+    else:
+
+        console.print("- None")
+
+    console.print()
+
+    console.print(
+        f"[bold]Conclusion[/bold]\n"
+        f"{summary['conclusion']}"
+    )
+
 def scan_project(project):
 
     show_header()    
@@ -157,17 +202,21 @@ def scan_project(project):
     )
 
     # ==================================================
-    # KNOWLEDGE BASE
+    # KNOWLEDGE
     # ==================================================
 
-    project_name = (
-        info.get("project")
-        or info.get("name")
-        or project
+    knowledge = get_project_knowledge(
+        project
     )
 
-    knowledge = get_project_knowledge(
-        project_name
+    # ==================================================
+    # PROJECT INTELLIGENCE
+    # ==================================================
+
+    console.print()
+
+    console.rule(
+        "[bold yellow]PROJECT INTELLIGENCE"
     )
 
     # ==================================================
@@ -484,16 +533,22 @@ def scan_project(project):
         github_info,
         knowledge
     )
+    summary = generate_summary(
+        analysis,
+        github_info,
+        knowledge,
+        score
+    )
 
     # ==================================================
-    # AIRDROP INTELLIGENCE SCORE
+    # PROJECT HEALTH SCORE
     # ==================================================
 
     console.print()
 
     console.rule(
         "[bold green]"
-        "AIRDROP INTELLIGENCE SCORE"
+        "PROJECT HEALTH SCORE"
     )
 
     console.print(
@@ -571,6 +626,9 @@ def scan_project(project):
             "⭐⭐ Low Potential"
             "[/bold red]"
         )
+
+    show_ai_summary(summary)
+
     # ==================================================
     # EXPORT REPORT
     # ==================================================
@@ -599,8 +657,8 @@ def main():
     while True:
 
         console.rule(
-            "[bold blue]Airdrop Research Assistant v2.0"
-        )
+            f"[bold blue]{APP_NAME} v{APP_VERSION}"
+    )
 
         print("1. Single Scan")
         print("2. Batch Scan")

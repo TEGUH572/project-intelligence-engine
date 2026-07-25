@@ -2,6 +2,7 @@ import requests
 import re
 from urllib.parse import quote, urlparse, urljoin
 
+from config import REQUEST_TIMEOUT, USER_AGENT, GITHUB_API, GITHUB_TOKEN
 
 class GitHubResearch:
 
@@ -15,8 +16,13 @@ class GitHubResearch:
 
         self.headers = {
             "Accept": "application/vnd.github+json",
-            "User-Agent": "Airdrop-Research-Assistant"
+            "User-Agent": USER_AGENT
         }
+
+        if GITHUB_TOKEN:
+            self.headers["Authorization"] = (
+                f"Bearer {GITHUB_TOKEN}"
+            )
 
     # ==================================================
     # GENERIC REQUEST
@@ -31,11 +37,9 @@ class GitHubResearch:
 
             response = requests.get(
                 url,
-                timeout=10,
+                timeout=REQUEST_TIMEOUT,
                 headers={
-                    "User-Agent":
-                    "Mozilla/5.0 "
-                    "Airdrop-Research-Assistant"
+                    "User-Agent": USER_AGENT
                 }
             )
 
@@ -64,7 +68,7 @@ class GitHubResearch:
             response = requests.get(
                 url,
                 params=params,
-                timeout=10,
+                timeout=REQUEST_TIMEOUT,
                 headers=self.headers
             )
 
@@ -72,9 +76,9 @@ class GitHubResearch:
 
                 return response.json()
 
-        except Exception:
+        except Exception as e:
 
-            pass
+            print(e)
 
         return None
 
@@ -282,11 +286,9 @@ class GitHubResearch:
     ):
 
         url = (
-            "https://api.github.com/"
-            "search/users?q="
-            + quote(
-                self.project_name
-            )
+            f"{GITHUB_API}/"
+            f"search/users?q="
+            f"{quote(self.project_name)}"
         )
 
         data = self.github_get(
@@ -381,7 +383,7 @@ class GitHubResearch:
     ):
 
         url = (
-            f"https://api.github.com/"
+            f"{GITHUB_API}/"
             f"orgs/{organization}/repos"
         )
 
@@ -401,7 +403,7 @@ class GitHubResearch:
             return repos
 
         url = (
-            f"https://api.github.com/"
+            f"{GITHUB_API}/"
             f"users/{organization}/repos"
         )
 
@@ -445,7 +447,7 @@ class GitHubResearch:
                 continue
 
             url = (
-                f"https://api.github.com/"
+                f"{GITHUB_API}/"
                 f"repos/{organization}/"
                 f"{repo_name}/contributors"
             )
@@ -503,7 +505,7 @@ class GitHubResearch:
                 continue
 
             url = (
-                f"https://api.github.com/"
+                f"{GITHUB_API}/"
                 f"repos/{organization}/"
                 f"{repo_name}/pulls"
             )
@@ -550,7 +552,7 @@ class GitHubResearch:
                 continue
 
             url = (
-                f"https://api.github.com/"
+                f"{GITHUB_API}/"
                 f"repos/{organization}/"
                 f"{repo_name}/releases"
             )
@@ -883,6 +885,9 @@ class GitHubResearch:
                         organization
                     )
                 )
+
+                print("Organization:", organization)
+                print("Repos found:", len(repos))
 
                 if repos:
 
