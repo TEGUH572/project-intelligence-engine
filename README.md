@@ -354,3 +354,5 @@ MIT License
 Built with ❤️ for the blockchain ecosystem.
 
 </p>
+
+_Last updated: July 2026_
