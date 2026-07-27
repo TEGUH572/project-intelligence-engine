@@ -10,10 +10,15 @@ AI-powered blockchain project intelligence and research framework.
 
 <p align="center">
 
-![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Status](https://img.shields.io/badge/Status-Active-success.svg)
-![CLI](https://img.shields.io/badge/Interface-CLI-orange.svg)
+![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
+
+![License](https://img.shields.io/github/license/TEGUH572/project-intelligence-engine)
+
+![GitHub last commit](https://img.shields.io/github/last-commit/TEGUH572/project-intelligence-engine)
+
+![GitHub issues](https://img.shields.io/github/issues/TEGUH572/project-intelligence-engine)
+
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/TEGUH572/project-intelligence-engine/python-ci.yml?branch=main)
 
 </p>
 
@@ -106,13 +111,25 @@ Professional reports ready for research documentation.
 
 ---
 
-# 🏗 Architecture
+## 🏗️ Architecture
 
 <p align="center">
-<img src="assets/architecture.png">
+  <img src="assets/architecture.png" width="900">
 </p>
 
 ---
+
+## 🎬 Demo
+
+<p align="center">
+  <img src="assets/demo.gif" width="900" alt="Project Demo">
+</p>
+
+> Demo showing the complete Project Intelligence Engine workflow from project input to AI-generated analysis.
+
+---
+
+## ✨ Features
 
 # 📂 Project Structure
 
