@@ -2,7 +2,13 @@ import requests
 import re
 from urllib.parse import quote, urlparse, urljoin
 
-from config import REQUEST_TIMEOUT, USER_AGENT, GITHUB_API, GITHUB_TOKEN
+from config import (
+    GITHUB_API,
+    GITHUB_TOKEN,
+    USER_AGENT,
+    REQUEST_TIMEOUT,
+    SHOW_GITHUB_REQUESTS
+)
 
 class GitHubResearch:
 
@@ -58,10 +64,10 @@ class GitHubResearch:
     # ==================================================
 
     def github_get(
-        self,
-        url,
-        params=None
-    ):
+            self,
+            url,
+            params=None
+        ):
 
         try:
 
@@ -72,13 +78,22 @@ class GitHubResearch:
                 headers=self.headers
             )
 
-            if response.status_code == 200:
+            if SHOW_GITHUB_REQUESTS:
 
+                print("URL:", response.url)
+                print("Status:", response.status_code)
+
+            if response.status_code == 200:
                 return response.json()
+
+            if SHOW_GITHUB_REQUESTS:
+
+                print("Response:", response.text)
 
         except Exception as e:
 
-            print(e)
+            if SHOW_GITHUB_REQUESTS:
+                print(e)
 
         return None
 

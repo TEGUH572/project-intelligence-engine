@@ -200,8 +200,66 @@ PROJECT_KNOWLEDGE = {
             "designed for fast and scalable decentralized applications."
         ),
     },
-}
 
+    # ==================================================
+    # SUPERFLUID
+    # ==================================================
+
+    "superfluid": {
+        "name": "Superfluid",
+        "category": "Money Streaming Protocol",
+        "blockchain": (
+            "Ethereum, Base, Optimism, "
+            "Arbitrum, Polygon"
+        ),
+        "token": "Super Tokens",
+
+        "website": "https://superfluid.org/",
+        "docs": "https://docs.superfluid.org/",
+
+        "testnet": False,
+        "mainnet": True,
+
+        "bridge": False,
+        "explorer": False,
+
+        "funding": "Available",
+
+        "investors": [
+            "Multicoin Capital",
+            "Fabric Ventures"
+        ],
+
+        "ecosystem": True,
+
+        "supported_networks": [
+            "Ethereum",
+            "Base",
+            "Optimism",
+            "Arbitrum",
+            "Polygon",
+        ],
+
+        "sdk": True,
+
+        "streaming": True,
+
+        "use_cases": [
+            "Payroll",
+            "Subscriptions",
+            "Token Vesting",
+            "Rewards",
+            "Recurring Payments",
+        ],
+
+        "description": (
+            "Superfluid is a money streaming protocol "
+            "that enables real-time token transfers, "
+            "subscriptions, payroll, vesting, and "
+            "recurring payments."
+        )
+    },
+}
 
 # ==================================================
 # FIND PROJECT KNOWLEDGE

@@ -14,3 +14,5 @@ USER_AGENT = (
 GITHUB_API = "https://api.github.com"
 
 GITHUB_TOKEN = ""
+
+SHOW_GITHUB_REQUESTS = False

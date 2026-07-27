@@ -12,6 +12,10 @@ from repository_ranker import (
 )
 from analyzer.scorer import calculate_score
 from analyzer.summary import generate_summary
+from analyzer.recommendation import generate_recommendation
+from analyzer.recommendation import generate_integration_guide
+from analyzer.code_generator import generate_code_examples
+from analyzer.sdk import get_sdk
 from analyzer.intelligence import analyze_project
 from analyzer.knowledge import get_project_knowledge
 from reporter.exporter import export_json, export_markdown, export_batch_json, export_batch_markdown
@@ -19,6 +23,12 @@ from reporter.ranking import show_batch_ranking, show_batch_summary
 from scanner.batch import get_projects
 
 console = Console()
+
+def print_field(label, value):
+
+    console.print(
+        f"[cyan]{label:<15}[/cyan]: {value}"
+    )
 
 def show_header():
 
@@ -205,8 +215,17 @@ def scan_project(project):
     # KNOWLEDGE
     # ==================================================
 
-    knowledge = get_project_knowledge(
-        project
+    knowledge = get_project_knowledge( project)
+
+    sdk = get_sdk(project)
+
+
+    if sdk:
+        knowledge["sdk_info"] = sdk
+
+    examples = generate_code_examples(
+        knowledge,
+        sdk
     )
 
     # ==================================================
@@ -216,7 +235,7 @@ def scan_project(project):
     console.print()
 
     console.rule(
-        "[bold yellow]PROJECT INTELLIGENCE"
+        "[bold cyan]SUPERFLUID PROJECT INTELLIGENCE"
     )
 
     # ==================================================
@@ -285,6 +304,7 @@ def scan_project(project):
     github_info = github_research.analyze(
         socials.get("docs")
     )
+
 
     # ==================================================
     # OFFICIAL REPOSITORY RANKING
@@ -497,24 +517,43 @@ def scan_project(project):
     console.print()
 
     console.rule(
-        "[bold yellow]KNOWLEDGE BASE"
+        "[bold yellow]SUPERFLUID KNOWLEDGE"
     )
 
     if knowledge:
 
         console.print(
-            f"Funding     : "
-            f"{knowledge.get('funding', 'Unknown')}"
+            f"Funding      : {knowledge.get('funding', 'Unknown')}"
+        )
+
+        investors = knowledge.get("investors", [])
+
+        console.print(
+            f"Investors    : {', '.join(investors) if investors else 'Unknown'}"
         )
 
         console.print(
-            f"Investors   : "
-            f"{knowledge.get('investors', 'Unknown')}"
+            f"Ecosystem    : {'Yes' if knowledge.get('ecosystem') else 'No'}"
         )
 
         console.print(
-            f"Ecosystem   : "
-            f"{'Yes' if knowledge.get('ecosystem') else 'No'}"
+            f"SDK          : {'Available' if knowledge.get('sdk') else 'No'}"
+        )
+
+        console.print(
+            f"Streaming    : {'Native' if knowledge.get('streaming') else 'No'}"
+        )
+
+        networks = knowledge.get("supported_networks", [])
+
+        console.print(
+            f"Networks     : {', '.join(networks) if networks else 'Unknown'}"
+        )
+
+        use_cases = knowledge.get("use_cases", [])
+
+        console.print(
+            f"Use Cases    : {', '.join(use_cases) if use_cases else 'None'}"
         )
 
     else:
@@ -524,7 +563,141 @@ def scan_project(project):
         )
 
     # ==================================================
-    # AIRDROP SCORE
+    # SDK INTELLIGENCE
+    # ==================================================
+
+    console.print()
+
+    console.rule(
+        "[bold cyan]SDK INTELLIGENCE"
+    )
+
+    sdk_info = knowledge.get("sdk_info", {})
+
+    if sdk_info:
+
+        console.print(
+            f"SDK Available    : {'Yes' if sdk_info.get('available') else 'No'}"
+        )
+
+        console.print()
+
+        console.print("[bold]Languages[/bold]")
+
+        for lang in sdk_info.get("languages", []):
+            console.print(f"✓ {lang}")
+
+        console.print()
+
+        console.print("[bold]Packages[/bold]")
+
+        for package in sdk_info.get("packages", []):
+            console.print(f"• {package}")
+
+        console.print()
+
+        console.print(
+            f"Install Command  : {sdk_info.get('install', 'Unknown')}"
+        )
+
+        console.print(
+            f"Package Manager  : {sdk_info.get('package_manager', 'Unknown')}"
+        )
+
+        console.print(
+            f"Developer Docs   : {sdk_info.get('docs', 'Unknown')}"
+        )
+
+        console.print(
+            f"Official Examples: {sdk_info.get('examples', 0)}"
+        )
+
+    else:
+
+        console.print(
+            "No SDK information available."
+        )
+
+    # ==================================================
+    # CODE EXAMPLES
+    # ==================================================
+
+    console.print()
+
+    console.rule(
+        "[bold green]CODE EXAMPLES"
+    )
+
+    console.print(
+        "[bold]Install Command[/bold]"
+    )
+
+    console.print(
+        sdk_info.get(
+            "install",
+            "Unknown"
+        )
+    )
+
+    console.print()
+
+    console.print(
+        "[bold]Documentation[/bold]"
+    )
+
+    console.print(
+        sdk_info.get(
+            "docs",
+            "Unknown"
+        )
+    )
+
+    console.print()
+
+    if examples.get("javascript"):
+
+        console.print("[bold cyan]JavaScript[/bold cyan]")
+
+        console.print(
+            examples["javascript"],
+            markup=False
+        )
+
+    if examples.get("typescript"):
+
+        console.print()
+
+        console.print("[bold cyan]TypeScript[/bold cyan]")
+
+        console.print(
+            examples["typescript"],
+            markup=False
+        )
+
+    if examples.get("python"):
+
+        console.print()
+
+        console.print("[bold cyan]Python[/bold cyan]")
+
+        console.print(
+            examples["python"],
+            markup=False
+        )
+
+    if examples.get("solidity"):
+
+        console.print()
+
+        console.print("[bold cyan]Solidity[/bold cyan]")
+
+        console.print(
+            examples["solidity"],
+            markup=False
+        )
+
+    # ==================================================
+    # PROJECT INTELLIGENCE SCORE
     # ==================================================
 
     score = calculate_score(
@@ -547,8 +720,7 @@ def scan_project(project):
     console.print()
 
     console.rule(
-        "[bold green]"
-        "PROJECT HEALTH SCORE"
+        "[bold green]INTEGRATION READINESS"
     )
 
     console.print(
@@ -568,8 +740,7 @@ def scan_project(project):
     console.print()
 
     console.rule(
-        "[bold cyan]"
-        "SCORE BREAKDOWN"
+        "[bold cyan]INTEGRATION BREAKDOWN"
     )
 
     breakdown = score.get(
@@ -590,32 +761,29 @@ def scan_project(project):
 
     console.print()
 
-    rating = score.get(
-        "rating",
-        "Unknown"
-    )
+    total_score = score.get("total", 0)
 
-    if rating == "Very High Potential":
+    if total_score >= 80:
 
         console.print(
             "[bold green]"
-            "⭐⭐⭐⭐⭐ Very High Potential"
+            "✅ Excellent Integration Candidate"
             "[/bold green]"
         )
 
-    elif rating == "High Potential":
+    elif total_score >= 60:
 
         console.print(
             "[bold cyan]"
-            "⭐⭐⭐⭐ High Potential"
+            "✅ Good Integration Candidate"
             "[/bold cyan]"
         )
 
-    elif rating == "Medium Potential":
+    elif total_score >= 40:
 
         console.print(
             "[bold yellow]"
-            "⭐⭐⭐ Medium Potential"
+            "⚠ Needs Additional Review"
             "[/bold yellow]"
         )
 
@@ -623,11 +791,89 @@ def scan_project(project):
 
         console.print(
             "[bold red]"
-            "⭐⭐ Low Potential"
+            "❌ Low Integration Readiness"
             "[/bold red]"
         )
 
     show_ai_summary(summary)
+
+    # ==================================================
+    # INTEGRATION RECOMMENDATION
+    # ==================================================
+
+    recommendation = generate_recommendation(
+        knowledge,
+        github_info
+    )
+
+    guide = generate_integration_guide(
+        knowledge
+    )
+
+    console.print()
+
+    console.rule(
+        "[bold cyan]INTEGRATION RECOMMENDATION"
+    )
+
+    console.print(
+        f"Overall Recommendation : {recommendation['overall']}"
+    )
+
+    console.print(
+        f"Integration Difficulty : {recommendation['difficulty']}"
+    )
+
+    console.print(
+        f"Estimated Time         : {recommendation['time']}"
+    )
+
+    console.print()
+
+    console.print("[bold]Recommended Stack[/bold]")
+
+    for item in recommendation["stack"]:
+        console.print(f"• {item}")
+
+    console.print()
+
+    console.print("[bold]Supported Networks[/bold]")
+
+    for network in recommendation["networks"]:
+        console.print(f"• {network}")
+
+    console.print()
+
+    console.print("[bold]Best Use Cases[/bold]")
+
+    for case in recommendation["use_cases"]:
+        console.print(f"✓ {case}")
+
+    console.print()
+
+    console.print(
+        f"Developer Experience : "
+        f"{recommendation['developer_experience']}"
+    )
+
+    # ==================================================
+    # INTEGRATION GUIDE
+    # ==================================================
+
+    console.print()
+
+    console.rule(
+        "[bold green]INTEGRATION GUIDE"
+    )
+
+    for i, step in enumerate(
+        guide["steps"],
+        start=1
+    ):
+
+        console.print(
+            f"{i}. {step}"
+        )
 
     # ==================================================
     # EXPORT REPORT
@@ -648,10 +894,11 @@ def scan_project(project):
     json_file = export_json(project, report)
     md_file = export_markdown(project, report)
     console.print()
-    console.rule("[bold blue]REPORT EXPORT")
+    console.rule("[bold blue]EXPORTED REPORTS")
     console.print(f"[green]JSON Report : {json_file}[/green]")
     console.print(f"[green]Markdown Report : {md_file}[/green]")
     return report
+
 def main():
 
     while True:
